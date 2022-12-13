@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Settings implements Serializable {
     private boolean fullscreen = true;
-    private int resX = 1366, resY = 768, renderResX = 683, renderResY = 384;
+    private int resX = 1920, resY = 1080, renderResX = 1920, renderResY = 1080;
 
     public boolean isFullscreen() {
         return fullscreen;

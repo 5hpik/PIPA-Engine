@@ -12,9 +12,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-/**
- * Created by Lenovo on 10.07.2017.
- */
 public class Camera extends JPanel {
     private final int wallHeight, floorSize = 4, ceilingSize = 4, halfResY, visibility = 8, fogRGB = Color.black.getRGB(), nrOfBarSprites = 8;
             // floorSize and ceilingSize are in tiles
@@ -49,15 +46,15 @@ public class Camera extends JPanel {
         render(g);
         drawWeapon(g);
         drawViewfinder(g);
-        drawHealthAndManabar(g);
+        drawHealthAndStaminabar(g);
     }
 
-    private void drawHealthAndManabar(Graphics g) {     // assumption: healthbar and manabar have the same size
+    private void drawHealthAndStaminabar(Graphics g) {     // assumption: healthbar and staminabar have the same size
         BufferedImage healthbar = Textures.getSprites().get(Textures.getHealthbar().get(nrOfBarSprites * hero.getHealth() / hero.getMaxHealth())).getImage();
-        BufferedImage manabar = Textures.getSprites().get(Textures.getManabar().get(nrOfBarSprites * hero.getMana() / hero.getMaxMana())).getImage();
+        BufferedImage staminabar = Textures.getSprites().get(Textures.getStaminabar().get(nrOfBarSprites * hero.getStamina() / hero.getMaxStamina())).getImage();
         int w = (int) (healthbar.getWidth() * ratioX), h = (int) (healthbar.getHeight() * ratioY), marginX = (int) (barsXMargin * ratioX), marginY = (int) (barsYMargin * ratioY);
         g.drawImage(healthbar, marginX, resY - h + marginY, w, h, null);
-        g.drawImage(manabar, resX - w - marginX, resY - h + marginY, w, h, null);
+        g.drawImage(staminabar, resX - w - marginX, resY - h + marginY, w, h, null);
     }
 
     private void drawViewfinder(Graphics g) {

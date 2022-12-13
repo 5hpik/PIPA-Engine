@@ -6,9 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 
-/**
- * Created by Lenovo on 10.07.2017.
- */
 public class Textures {
     private static Hashtable<Sprite.Sprites, Sprite> sprites = new Hashtable<>();
     private static Hashtable<Integer, Sprite.Sprites> blocks = new Hashtable<>();
@@ -18,7 +15,7 @@ public class Textures {
     private static Hashtable<Weapon.Weapons, Sprite.Sprites> weapons = new Hashtable<>();
     private static Hashtable<RangedWeapon.Bullets, Sprite.Sprites> bullets = new Hashtable<>();
     private static Hashtable<Integer, Sprite.Sprites> healthbar = new Hashtable<>();
-    private static Hashtable<Integer, Sprite.Sprites> manabar = new Hashtable<>();
+    private static Hashtable<Integer, Sprite.Sprites> staminabar = new Hashtable<>();
 
     static void init() {
         try {
@@ -29,14 +26,14 @@ public class Textures {
             initCeilings();
             initNPCs();
             initWeapons();
-            initHealthAndManabar();
+            initHealthAndStaminabar();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void initHealthAndManabar() {
+    private static void initHealthAndStaminabar() {
         healthbar.put(0, Sprite.Sprites.H0);
         healthbar.put(1, Sprite.Sprites.H1);
         healthbar.put(2, Sprite.Sprites.H2);
@@ -47,15 +44,15 @@ public class Textures {
         healthbar.put(7, Sprite.Sprites.H7);
         healthbar.put(8, Sprite.Sprites.H8);
 
-        manabar.put(0, Sprite.Sprites.M0);
-        manabar.put(1, Sprite.Sprites.M1);
-        manabar.put(2, Sprite.Sprites.M2);
-        manabar.put(3, Sprite.Sprites.M3);
-        manabar.put(4, Sprite.Sprites.M4);
-        manabar.put(5, Sprite.Sprites.M5);
-        manabar.put(6, Sprite.Sprites.M6);
-        manabar.put(7, Sprite.Sprites.M7);
-        manabar.put(8, Sprite.Sprites.M8);
+        staminabar.put(0, Sprite.Sprites.M0);
+        staminabar.put(1, Sprite.Sprites.M1);
+        staminabar.put(2, Sprite.Sprites.M2);
+        staminabar.put(3, Sprite.Sprites.M3);
+        staminabar.put(4, Sprite.Sprites.M4);
+        staminabar.put(5, Sprite.Sprites.M5);
+        staminabar.put(6, Sprite.Sprites.M6);
+        staminabar.put(7, Sprite.Sprites.M7);
+        staminabar.put(8, Sprite.Sprites.M8);
     }
 
     private static void initWeapons() {
@@ -157,8 +154,8 @@ public class Textures {
         return healthbar;
     }
 
-    public static Hashtable<Integer, Sprite.Sprites> getManabar() {
-        return manabar;
+    public static Hashtable<Integer, Sprite.Sprites> getStaminabar() {
+        return staminabar;
     }
 
     public static Hashtable<Weapon.Weapons, Sprite.Sprites> getWeapons() {

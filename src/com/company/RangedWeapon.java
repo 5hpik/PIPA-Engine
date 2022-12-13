@@ -1,8 +1,5 @@
 package com.company;
 
-/**
- * Created by Lenovo on 14.07.2017.
- */
 public class RangedWeapon extends Weapon {
     enum Bullets {
         BULLET, L_BULLET, R_BULLET, SHOT

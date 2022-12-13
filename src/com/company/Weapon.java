@@ -2,9 +2,6 @@ package com.company;
 
 import java.util.Hashtable;
 
-/**
- * Created by Lenovo on 14.07.2017.
- */
 public class Weapon {
     enum Weapons {
         S_SWORD

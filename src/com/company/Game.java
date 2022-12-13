@@ -10,9 +10,6 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Random;
 
-/**
- * Created by Lenovo on 10.07.2017.
- */
 public class Game extends JFrame {
     enum State {
         MENU, GAME, PAUSE
@@ -144,7 +141,7 @@ public class Game extends JFrame {
         initNPCs();
         Weapon.initWeapons();
 
-        hero = new Hero(0.03, 0.06, 100, 100, 100, 100, 100, 100, new Point2D(4.5, 4.5),
+        hero = new Hero(0.03, 0.06, 100, 100, 100, 100, new Point2D(4.5, 4.5),
                 new Point2D(0, 1), new LinkedList<>());
 
         input = new Input(this, hero);
