@@ -2,9 +2,6 @@ package com.company;
 
 import java.awt.image.BufferedImage;
 
-/**
- * Created by Lenovo on 15.07.2017.
- */
 public class Sprite {
     enum Sprites {
         S_SWORD,

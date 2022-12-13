@@ -2,9 +2,6 @@ package com.company;
 
 import javafx.geometry.Point2D;
 
-/**
- * Created by Lenovo on 11.07.2017.
- */
 public class Mtx2x2 {
     /*
         a b

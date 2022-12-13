@@ -432,13 +432,13 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
     }
 
     private void initChosen() {
-        /*chosen.put(Text.FULLSCREEN, s.isFullscreen() ? 0 : 1);
+        chosen.put(Text.FULLSCREEN, s.isFullscreen() ? 0 : 1);
         chosen.put(Text.RES, indices.get(s.getResY()));
-        chosen.put(Text.RENDER_RES, indices.get(s.getRenderResY()));
+        //chosen.put(Text.RENDER_RES, indices.get(s.getRenderResY()));
 
         checked.put(Text.FULLSCREEN, chosen.get(Text.FULLSCREEN));
         checked.put(Text.RES, chosen.get(Text.RES));
-        checked.put(Text.RENDER_RES, chosen.get(Text.RENDER_RES));*/
+        //checked.put(Text.RENDER_RES, chosen.get(Text.RENDER_RES));
     }
 
     private void initResolutions() {

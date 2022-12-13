@@ -6,14 +6,10 @@ import javafx.util.Pair;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-/**
- * Created by Lenovo on 14.07.2017.
- */
 public class Character {
-    boolean breathing = false;
     double weaponAngle = 0, deltaWeaponAngle, attackingWeaponAngle = -Math.PI / 2;
     double speed, sprintSpeed, currentSpeed, minDistToBlock = 0.1;
-    int health, mana, stamina, maxHealth, maxMana, maxStamina;
+    int health, stamina, maxHealth, maxStamina;
 
     Point2D pos, dir, zero = new Point2D(0, 0), movingDir = zero, lastMovingDir = zero;
 
@@ -25,16 +21,14 @@ public class Character {
 
     LinkedList<Weapon.Weapons> weapons = new LinkedList<>();
 
-    public Character(double speed, double sprintSpeed, int health, int mana, int stamina, int maxHealth, int maxMana, int maxStamina, Point2D pos, Point2D dir,
+    public Character(double speed, double sprintSpeed, int health, int stamina, int maxHealth, int maxStamina, Point2D pos, Point2D dir,
                      LinkedList<Weapon.Weapons> weapons) {
         this.speed = speed;
         this.sprintSpeed = sprintSpeed;
         currentSpeed = speed;
         this.health = health;
-        this.mana = mana;
         this.stamina = stamina;
         this.maxHealth = maxHealth;
-        this.maxMana = maxMana;
         this.maxStamina = maxStamina;
         this.pos = pos;
         this.dir = normalize(dir);
@@ -57,15 +51,6 @@ public class Character {
 
         if (stamina < maxStamina) {
             stamina++;
-
-            if (stamina < maxStamina / 2 && !breathing) {
-                Audio.start(Audio.Sound.BREATHE);
-                breathing = true;
-            }
-        }
-        if (stamina >= maxStamina / 2 && breathing) {
-            Audio.stop(Audio.Sound.BREATHE);
-            breathing = false;
         }
 
         if (deltaWeaponAngle != 0)
@@ -196,19 +181,12 @@ public class Character {
         return maxHealth;
     }
 
-    public int getMana() {
-        return mana;
-    }
-
-    public int getMaxMana() {
-        return maxMana;
-    }
-
     private Point2D normalize(Point2D vec) {
         double d = vec.magnitude();
         return vec.multiply(d == 0 ? 0 : (1 / d));
     }
-
+    public int getStamina(){return stamina;}
+    public int getMaxStamina(){return maxStamina;}
     public double getWeaponAngle() {
         return weaponAngle;
     }

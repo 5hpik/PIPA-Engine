@@ -7,9 +7,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Hashtable;
 
-/**
- * Created by Lenovo on 11.07.2017.
- */
 public class Input implements MouseListener, KeyListener {
     private long time = System.currentTimeMillis();
     private double sensitivity = 0.003;
