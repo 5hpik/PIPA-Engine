@@ -511,7 +511,7 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         final int titleY = (int) (40 * ratioY), textY = (int) (200 * ratioY), deltaTextY = (int) (60 * ratioY), endingX = resX * 890 / 1920;        // 890 and 1920 are arbitrary
         final float fontSize = 40 * Math.min(ratioY, ratioX), titleFontSize = 100 * Math.min(ratioY, ratioX), toastFontSize = 30 * Math.min(ratioY, ratioX);
 
-        Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/UnrealT.ttf"));
+        Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/font.ttf"));
         Graphics2D g2d = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
         LinkedList<Pair<Mode, Pair<Text, Text[]>>> list = new LinkedList<>();
 

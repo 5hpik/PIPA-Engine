@@ -8,12 +8,13 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Camera extends JPanel {
-    private final int wallHeight, floorSize = 4, ceilingSize = 4, halfResY, visibility = 8, fogRGB = Color.black.getRGB(), nrOfBarSprites = 8;
+    private final int wallHeight, floorSize = 4, ceilingSize = 4, halfResY, visibility = 5, fogRGB = Color.black.getRGB(), nrOfBarSprites = 8;
             // floorSize and ceilingSize are in tiles
 
     private int resX, resY, renderResX, renderResY, weaponSizeConst = 2, barsXMargin = 11, barsYMargin = 23;
@@ -43,18 +44,56 @@ public class Camera extends JPanel {
     }
 
     public void paint(Graphics g) {
-        render(g);
-        drawWeapon(g);
-        drawViewfinder(g);
-        drawHealthAndStaminabar(g);
+        try
+        {
+            render(g);
+            //drawWeapon(g);
+            drawViewfinder(g);
+            drawHealthAndStamina(g);
+        }
+        catch (Exception e)
+        {
+            System.out.println("Exception " + e);
+        }
     }
 
-    private void drawHealthAndStaminabar(Graphics g) {     // assumption: healthbar and staminabar have the same size
-        BufferedImage healthbar = Textures.getSprites().get(Textures.getHealthbar().get(nrOfBarSprites * hero.getHealth() / hero.getMaxHealth())).getImage();
-        BufferedImage staminabar = Textures.getSprites().get(Textures.getStaminabar().get(nrOfBarSprites * hero.getStamina() / hero.getMaxStamina())).getImage();
-        int w = (int) (healthbar.getWidth() * ratioX), h = (int) (healthbar.getHeight() * ratioY), marginX = (int) (barsXMargin * ratioX), marginY = (int) (barsYMargin * ratioY);
-        g.drawImage(healthbar, marginX, resY - h + marginY, w, h, null);
-        g.drawImage(staminabar, resX - w - marginX, resY - h + marginY, w, h, null);
+    private void drawHealthAndStamina(Graphics g) throws Exception {     // assumption: healthbar and staminabar have the same size
+        //BufferedImage healthbar = Textures.getSprites().get(Textures.getHealthbar().get(nrOfBarSprites * hero.getHealth() / hero.getMaxHealth())).getImage();
+        //BufferedImage staminabar = Textures.getSprites().get(Textures.getStaminabar().get(nrOfBarSprites * hero.getStamina() / hero.getMaxStamina())).getImage();
+        //int w = (int) (healthbar.getWidth() * ratioX);
+        //int h = (int) (healthbar.getHeight() * ratioY);
+        int marginX = (int) (barsXMargin * ratioX);
+        int marginY = (int) (barsYMargin * ratioY);
+        //g.drawImage(healthbar, marginX, resY - h + marginY, w, h, null);
+        //g.drawImage(staminabar, resX - w - marginX, resY - h + marginY, w, h, null);
+
+        Graphics2D g2d = (Graphics2D)g;
+
+        g2d.setFont(Font.createFont(Font.TRUETYPE_FONT, new File("res/font.ttf")).deriveFont(Font.PLAIN, 150));
+        FontMetrics fm = g2d.getFontMetrics();
+
+        g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        g2d.setFont(fm.getFont());
+        g2d.setColor(Color.RED);
+        g2d.drawString(Integer.toString(hero.health), marginX, resY - 80 + marginY);
+        g2d.setColor(Color.GREEN);
+        g2d.drawString(Integer.toString(hero.stamina), resX - 250 - marginX, resY - 80 + marginY);
+        g2d.dispose();
+
+    }
+
+    private void drawHealth(Graphics g) throws Exception
+    {
+        int marginX = (int) (barsXMargin * ratioX);
+        int marginY = (int) (barsYMargin * ratioY);
+
     }
 
     private void drawViewfinder(Graphics g) {
