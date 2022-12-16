@@ -19,12 +19,12 @@ public class Game extends JFrame {
     private int level, difficulty;
 
     private Camera camera;
-    private Hero hero;
+    private Player player;
     private Input input;
     private Menu menu;
-    private State state = State.MENU;
+    private State state = State.GAME;
     private Serialization settingsSerialization = new Serialization("settings.ser", Settings.class);
-    private Settings settings;
+    //private Settings settings;
 
     private LinkedList<int[][]> maps = new LinkedList<>();
     private LinkedList<NPC> NPCs = new LinkedList<>();
@@ -36,11 +36,8 @@ public class Game extends JFrame {
         setFocusable(true);
         setResizable(false);
 
-        Menu.initHashSets();
-        Menu.initModeStack();
-
         try {
-            readSettings();
+            applySettings();
             Audio.init();
         }
         catch (Exception e) {
@@ -55,75 +52,66 @@ public class Game extends JFrame {
         getContentPane().setCursor(Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT),
                 new Point(0, 0), "blank"));
 
-        menu = new Menu(settings.isFullscreen(), this, settings, settingsSerialization);
-        getContentPane().add(menu);
+        //menu = new Menu(settings.isFullscreen(), this, settings, settingsSerialization);
+        //getContentPane().add(menu);
 
-        if (settings.isFullscreen()) {
+        //if (settings.isFullscreen()) {
             setUndecorated(true);
             setExtendedState(MAXIMIZED_BOTH);
-        }
+        //}
 
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
 
-        Audio.resetAndStart(Audio.Sound.MENU);
+        newGame();
+
+        //Audio.resetAndStart(Audio.Sound.MENU);
         run();
     }
 
-    void applySettings(Menu.Mode mode) {
-        if (mode == Menu.Mode.GRAPHICS) {
-            if (settings.isFullscreen()) {
-                Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-                resX = d.width;
-                settings.setResX(resX);
-                resY = d.height;
-                settings.setResY(resY);
-            }
-            else {
-                resX = settings.getResX();
-                resY = settings.getResY();
-            }
+    void applySettings() {
+        //if (settings.isFullscreen())
+        {
+            Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+            resX = d.width;
+            //settings.setResX(resX);
+            resY = d.height;
+            //settings.setResY(resY);
+            //}
+            //else {
+            //resX = settings.getResX();
+            //resY = settings.getResY();
+            //}
 
-            renderedResX = settings.getRenderResX();
-            renderedResY = settings.getRenderResY();
+            renderedResX = 640;
+            renderedResY = 480;
         }
     }
 
     void refresh() {
-        remove(menu);
-        menu = new Menu(menu.isFullscreen(), this, settings, settingsSerialization);
-        add(menu);
-        validate();
 
         if (state == State.PAUSE)
-            camera = new Camera(resX, resY, renderedResX, renderedResY, hero, maps.get(level), NPCs);
+            camera = new Camera(resX, resY, renderedResX, renderedResY, player, maps.get(level), NPCs);
 
         setSize(resX, resY);
     }
 
-    private void readSettings() throws Exception {
+    /*private void readSettings() throws Exception {
         settings = (Settings) settingsSerialization.deserialize();
 
-        for (Menu.Mode mode : Menu.getSettings())
-            applySettings(mode);
-    }
+    }*/
 
     void pause() {
         Audio.stop(Audio.Sound.BG);
         Audio.resetAndStart(Audio.Sound.MENU);
         state = State.PAUSE;
-        getContentPane().remove(camera);
-        menu.pause();
-        getContentPane().add(menu);
-        getContentPane().validate();
     }
 
     void resume() {
         Audio.stop(Audio.Sound.MENU);
         Audio.resetAndStart(Audio.Sound.BG);
         state = State.GAME;
-        removeKeyListener(menu.getInput());
         input.resume(System.currentTimeMillis());
         getContentPane().remove(menu);
         getContentPane().add(camera);
@@ -141,14 +129,14 @@ public class Game extends JFrame {
         initNPCs();
         Weapon.initWeapons();
 
-        hero = new Hero(0.03, 0.06, 100, 100, 100, 100, false, new Point2D(4.5, 4.5),
+        player = new Player(0.03, 0.06, 100, 100, 100, 100, false, new Point2D(4.5, 4.5),
                 new Point2D(0, 1), new LinkedList<>());
 
-        input = new Input(this, hero);
+        input = new Input(this, player);
         addMouseListener(input);
         addKeyListener(input);
 
-        camera = new Camera(resX, resY, renderedResX, renderedResY, hero, map, NPCs);
+        camera = new Camera(resX, resY, renderedResX, renderedResY, player, map, NPCs);
 
         resume();
     }
@@ -160,15 +148,12 @@ public class Game extends JFrame {
     }
 
     private void run() {
-        while (true) {
+        while (true)
+        {
             long time = System.currentTimeMillis();
 
-            if (state != State.GAME)
-                menu.update();
-            else {
-                input.update();
-                hero.update();
-            }
+            input.update();
+            player.update();
 
             Sprite.update();
             repaint();

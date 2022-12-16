@@ -4,12 +4,14 @@ import javafx.geometry.Point2D;
 
 import java.util.LinkedList;
 
-public class Hero extends Character {
+public class Player extends Character {
     private double defaultFov = 66 * Math.PI / 180, aimFov = 45 * Math.PI / 180, fov = defaultFov, deltaFov, zDir = 1;
 
     public boolean isAiming;
 
-    public Hero(double speed, double sprintSpeed, int health, int stamina, int maxHealth, int maxStamina, boolean isAiming, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons) {
+    //public int kills;
+
+    public Player(double speed, double sprintSpeed, int health, int stamina, int maxHealth, int maxStamina, boolean isAiming, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons) {
         super(speed, sprintSpeed, health, stamina, maxHealth, maxStamina, pos, dir, weapons);
         this.weapons.add(Weapon.Weapons.S_SWORD);
         weapon = weapons.getFirst();

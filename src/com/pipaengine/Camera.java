@@ -22,13 +22,13 @@ public class Camera extends JPanel {
 
     private BufferedImage rendered;
 
-    private Hero hero;
+    private Player player;
 
     private int[][] map;
 
     private LinkedList<NPC> NPCs;
 
-    public Camera(int resX, int resY, int renderResX, int renderResY, Hero hero, int[][] map, LinkedList<NPC> NPCs) {
+    public Camera(int resX, int resY, int renderResX, int renderResY, Player player, int[][] map, LinkedList<NPC> NPCs) {
         this.resX = resX;
         this.resY = resY;
         this.renderResX = renderResX;
@@ -38,7 +38,7 @@ public class Camera extends JPanel {
         wallHeight = renderResY;
         halfResY = renderResY / 2;
         rendered = new BufferedImage(renderResX, renderResY, BufferedImage.TYPE_INT_RGB);
-        this.hero = hero;
+        this.player = player;
         this.map = map;
         this.NPCs = NPCs;
     }
@@ -48,8 +48,7 @@ public class Camera extends JPanel {
         {
             render(g);
             //drawWeapon(g);
-            drawViewfinder(g);
-            drawHealthAndStamina(g);
+            drawUI(g);
         }
         catch (Exception e)
         {
@@ -57,15 +56,9 @@ public class Camera extends JPanel {
         }
     }
 
-    private void drawHealthAndStamina(Graphics g) throws Exception {     // assumption: healthbar and staminabar have the same size
-        //BufferedImage healthbar = Textures.getSprites().get(Textures.getHealthbar().get(nrOfBarSprites * hero.getHealth() / hero.getMaxHealth())).getImage();
-        //BufferedImage staminabar = Textures.getSprites().get(Textures.getStaminabar().get(nrOfBarSprites * hero.getStamina() / hero.getMaxStamina())).getImage();
-        //int w = (int) (healthbar.getWidth() * ratioX);
-        //int h = (int) (healthbar.getHeight() * ratioY);
+    private void drawUI(Graphics g) throws Exception {
         int marginX = (int) (barsXMargin * ratioX);
         int marginY = (int) (barsYMargin * ratioY);
-        //g.drawImage(healthbar, marginX, resY - h + marginY, w, h, null);
-        //g.drawImage(staminabar, resX - w - marginX, resY - h + marginY, w, h, null);
 
         Graphics2D g2d = (Graphics2D)g;
 
@@ -82,18 +75,16 @@ public class Camera extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         g2d.setFont(fm.getFont());
         g2d.setColor(Color.RED);
-        g2d.drawString(Integer.toString(hero.health), marginX, resY - 80 + marginY);
+        g2d.drawString(Integer.toString(player.health), marginX, resY - 80 + marginY);
         g2d.setColor(Color.GREEN);
-        g2d.drawString(Integer.toString(hero.stamina), resX - 250 - marginX, resY - 80 + marginY);
+        g2d.drawString(Integer.toString(player.stamina), resX - 250 - marginX, resY - 80 + marginY);
+
+        //Crosshair
+        BufferedImage viewfinder = Textures.getSprites().get(Sprite.Sprites.VIEWFINDER).getImage();
+        int w = (int) (viewfinder.getWidth() * ratioX), h = (int) (viewfinder.getHeight() * ratioY);
+        g2d.drawImage(viewfinder, (resX - w) / 2, (resY - h) / 2, w, h, null);
+
         g2d.dispose();
-
-    }
-
-    private void drawHealth(Graphics g) throws Exception
-    {
-        int marginX = (int) (barsXMargin * ratioX);
-        int marginY = (int) (barsYMargin * ratioY);
-
     }
 
     private void drawViewfinder(Graphics g) {
@@ -103,12 +94,12 @@ public class Camera extends JPanel {
     }
 
     private void drawWeapon(Graphics g) {
-        BufferedImage img = Textures.getSprites().get(Textures.getWeapons().get(hero.getWeapon())).getImage();
+        BufferedImage img = Textures.getSprites().get(Textures.getWeapons().get(player.getWeapon())).getImage();
         if (img != null) {
             int w = img.getWidth(), h = img.getHeight(), x = (int) (resX * .256), y = (int) (resY * .456);      // .256 and .456 are arbitrary
             AffineTransform at = new AffineTransform();
             at.translate(w / 2, h / 2);
-            at.rotate(hero.getWeaponAngle(), w / 5, h / 2);     // 5 and 2 are arbitrary
+            at.rotate(player.getWeaponAngle(), w / 5, h / 2);     // 5 and 2 are arbitrary
             AffineTransformOp op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
             g.drawImage(op.filter(img, null), x, y, (int) (w * ratioX * weaponSizeConst), (int) (h * ratioY * weaponSizeConst), null);
         }
@@ -118,7 +109,7 @@ public class Camera extends JPanel {
         LinkedList<Pair<NPC, Integer>> NPCsToDraw = new LinkedList<>();
 
         for (NPC i : NPCs) {
-            Point2D vec = i.getPos().subtract(hero.getPos()), dir = hero.getDir(), zero = new Point2D(1, 0), perp = new Point2D(-vec.getY(), vec.getX());
+            Point2D vec = i.getPos().subtract(player.getPos()), dir = player.getDir(), zero = new Point2D(1, 0), perp = new Point2D(-vec.getY(), vec.getX());
             double vecAngle = vec.angle(zero), dirAngle = dir.angle(zero);
             vecAngle = vec.getY() < 0 ? 360 - vecAngle : vecAngle;
             dirAngle = dir.getY() < 0 ? 360 - dirAngle : dirAngle;
@@ -128,7 +119,7 @@ public class Camera extends JPanel {
 
             // TODO CALCULATE X WHERE NPC SHOULD BE DRAWN
 
-            if (vec.angle(dir) < hero.getFov() * 90 / Math.PI)
+            if (vec.angle(dir) < player.getFov() * 90 / Math.PI)
                 NPCsToDraw.add(new Pair<>(i, 2137));
         }
 
@@ -143,18 +134,18 @@ public class Camera extends JPanel {
     }
 
     private void render(Graphics g) {       // TODO DRAW NPCS HERE
-        int wallCenterZ = (int) (halfResY * hero.getzDir());
-        double fovRatio = hero.getDefaultFov() / hero.getFov();
-        Point2D dir = hero.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(hero.getFov() / 2) * dir.magnitude()), vec = dir.add(plane),
-                deltaPlane = plane.multiply((double) 2 / renderResX), pos = hero.getPos();
+        int wallCenterZ = (int) (halfResY * player.getzDir());
+        double fovRatio = player.getDefaultFov() / player.getFov();
+        Point2D dir = player.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(player.getFov() / 2) * dir.magnitude()), vec = dir.add(plane),
+                deltaPlane = plane.multiply((double) 2 / renderResX), pos = player.getPos();
 
         for (int i = 0; i < renderResX; i++, vec = vec.subtract(deltaPlane)) {        // TODO DRAW DIFFERENT HEIGHT BLOCKS
-            Iterator<Pair<Pair<Point2D, Boolean>, Point2D>> iterator = hero.collisionInfo(vec).iterator();
+            Iterator<Pair<Pair<Point2D, Boolean>, Point2D>> iterator = player.collisionInfo(vec).iterator();
 
-            Pair<Point2D, Boolean> collisionInfo = hero.collisionInfo(vec).getFirst().getKey();
+            Pair<Point2D, Boolean> collisionInfo = player.collisionInfo(vec).getFirst().getKey();
             Point2D collisionPoint = collisionInfo.getKey();
 
-            BufferedImage img = Textures.getSprites().get(Textures.getBlocks().get(hero.block(vec, collisionPoint))).getImage();
+            BufferedImage img = Textures.getSprites().get(Textures.getBlocks().get(player.block(vec, collisionPoint))).getImage();
             int x = (int) (((collisionInfo.getValue() ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth()), j = 0,
                     h = (int) (wallHeight * fovRatio * vec.magnitude() / pos.distance(collisionPoint)), emptyH = wallCenterZ - h / 2;
 
@@ -163,7 +154,7 @@ public class Camera extends JPanel {
 
             for (; j < emptyH; j++) {
                 double d = halfResY * vec.magnitude() / (wallCenterZ - j) * fovRatio;
-                Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
+                Point2D p = player.getPos().add(vec.multiply(d / vec.magnitude()));
                 int tile = map[(int) p.getY()][(int) p.getX()];
 
                 if (d < visibility) {
@@ -178,7 +169,7 @@ public class Camera extends JPanel {
                 rendered.setRGB(i, j, fogRatio < 1 ? mix(img.getRGB(x, (j - emptyH) * img.getHeight() / h), fogRGB, fogRatio) : fogRGB);
             for (; j < renderResY; j++) {
                 double d = halfResY * vec.magnitude() / (j - wallCenterZ) * fovRatio;
-                Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
+                Point2D p = player.getPos().add(vec.multiply(d / vec.magnitude()));
                 int tile = map[(int) p.getY()][(int) p.getX()];
 
                 if (d < visibility) {

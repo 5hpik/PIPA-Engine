@@ -15,15 +15,15 @@ public class Input implements MouseListener, KeyListener {
     private Robot robot;
 
     private Game game;
-    private Hero hero;
+    private Player player;
     private Game.State state = Game.State.GAME;
 
     private Hashtable<Integer, Boolean> mouseKeys = new Hashtable<>();
     private Hashtable<Integer, Boolean> keys = new Hashtable<>();
 
-    public Input(Game game, Hero hero) {
+    public Input(Game game, Player player) {
         this.game = game;
-        this.hero = hero;
+        this.player = player;
 
         initMouseKeys();
         initKeys();
@@ -70,8 +70,8 @@ public class Input implements MouseListener, KeyListener {
 
         Point oldMousePos = mousePos;
         mousePos = MouseInfo.getPointerInfo().getLocation();
-        hero.turn((oldMousePos.x - mousePos.x) * sensitivity);
-        hero.lookVertical((oldMousePos.y - mousePos.y) * sensitivity);
+        player.turn((oldMousePos.x - mousePos.x) * sensitivity);
+        player.lookVertical((oldMousePos.y - mousePos.y) * sensitivity);
         correctMouse();
     }
 
@@ -95,32 +95,34 @@ public class Input implements MouseListener, KeyListener {
             long newTime = System.currentTimeMillis();
 
             if (newTime - time >= 500) {
-                game.pause();
-                state = Game.State.PAUSE;
+                //game.pause();
+                //state = Game.State.PAUSE;
                 time = newTime;
             }
+
+            System.exit(0); //A temp line for exiting the game without trying to call menu
         }
 
         if (state == Game.State.PAUSE)
             return;
 
         if (mouseKeys.get(MouseEvent.BUTTON1))
-            hero.attack();
-        if (mouseKeys.get(MouseEvent.BUTTON3) && !hero.isAiming)
-            hero.aim();
-        if (!mouseKeys.get(MouseEvent.BUTTON3) && hero.isAiming)
-            hero.isAiming = false;
+            player.attack();
+        if (mouseKeys.get(MouseEvent.BUTTON3) && !player.isAiming)
+            player.aim();
+        if (!mouseKeys.get(MouseEvent.BUTTON3) && player.isAiming)
+            player.isAiming = false;
 
         if (keys.get(KeyEvent.VK_W))
-            hero.forward();
+            player.forward();
         if (keys.get(KeyEvent.VK_S))
-            hero.backward();
+            player.backward();
         if (keys.get(KeyEvent.VK_A))
-            hero.left();
+            player.left();
         if (keys.get(KeyEvent.VK_D))
-            hero.right();
+            player.right();
         if (keys.get(KeyEvent.VK_SHIFT))
-            hero.sprint();
+            player.sprint();
     }
 
     public void mouseEntered(MouseEvent e) {

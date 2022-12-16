@@ -11,7 +11,7 @@ import java.util.Hashtable;
 
 public class Audio {
     enum Sound {
-        MENU, SWORD, STEPS, FAST_STEPS, BREATHE, BG,
+        MENU, SHOOT, STEPS, FAST_STEPS, BREATHE, BG,
     }
 
     private static Hashtable<Sound, Clip> clips = new Hashtable<>();
@@ -71,7 +71,7 @@ public class Audio {
         stream = AudioSystem.getAudioInputStream(new File("res/audio/sword.wav"));
         clip = AudioSystem.getClip();
         clip.open(stream);
-        clips.put(Sound.SWORD, clip);
+        clips.put(Sound.SHOOT, clip);
 
         stream = AudioSystem.getAudioInputStream(new File("res/audio/steps.wav"));
         clip = AudioSystem.getClip();

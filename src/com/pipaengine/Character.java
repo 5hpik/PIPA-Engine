@@ -146,7 +146,7 @@ public class Character {
     void attack() {
         if (deltaWeaponAngle != -.2) {
             deltaWeaponAngle = -.2;
-            Audio.resetAndStart(Audio.Sound.SWORD);
+            Audio.resetAndStart(Audio.Sound.SHOOT);
         }
     }
 
@@ -166,8 +166,10 @@ public class Character {
         dirs.add(new Mtx2x2(0, 1, -1, 0).apply(dir));
     }
 
-    void sprint() {
-        if (stamina > 0) {
+    void sprint()
+    {
+        if (stamina > 0)
+        {
             currentSpeed = sprintSpeed;
             stamina -= 2;
         }
