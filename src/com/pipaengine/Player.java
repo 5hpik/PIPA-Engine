@@ -50,7 +50,7 @@ public class Player extends Character {
     }
 
     void aim() {
-        deltaFov = fov == defaultFov ? -0.035 : fov == aimFov ? 0.035 : deltaFov;
+        deltaFov = fov == defaultFov ? -0.055 : fov == aimFov ? 0.055 : deltaFov;
         isAiming = true;
     }
 

@@ -1,28 +1,29 @@
 package com.pipaengine;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
+import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Hashtable;
 
-public class Audio {
-    enum Sound {
+public class Audio
+{
+    enum Sound
+    {
         MENU, SHOOT, STEPS, FAST_STEPS, BREATHE, BG,
     }
 
     private static Hashtable<Sound, Clip> clips = new Hashtable<>();
 
-    static void resetAndStart(Sound s) {
+    static void resetAndStart(Sound s)
+    {
         Clip c = clips.get(s);
         c.setMicrosecondPosition(0);
         c.start();
     }
 
-    static void start(Sound s) {
+    static void start(Sound s)
+    {
         clips.get(s).start();
     }
 
@@ -30,7 +31,8 @@ public class Audio {
         clips.get(s).stop();
     }
 
-    private static Clip changeSpeed(boolean loop, double ratio, AudioInputStream ais) throws Exception {
+    private static Clip changeSpeed(boolean loop, double ratio, AudioInputStream ais) throws Exception
+    {
         AudioFormat af = ais.getFormat();
         int frameSize = af.getFrameSize();
         byte[] b = new byte[(int) Math.pow(2, 16)];
@@ -54,42 +56,48 @@ public class Audio {
         AudioInputStream ais1 = new AudioInputStream(bais, af, b1.length);
         Clip c = AudioSystem.getClip();
         c.open(ais1);
+
         if (loop)
             c.loop(Clip.LOOP_CONTINUOUSLY);
+
         c.stop();
+
         return c;
     }
 
-    static void init() throws Exception {
-        AudioInputStream stream = AudioSystem.getAudioInputStream(new File("res/audio/intro.wav"));
+    static void init() throws Exception
+    {
+        FloatControl gainControl;
+
+        AudioInputStream stream = AudioSystem.getAudioInputStream(new File("resources/audio/intro.wav"));
         Clip clip = AudioSystem.getClip();
         clip.open(stream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.stop();        // after setting clip loop continuously I have to stop it
         clips.put(Sound.MENU, clip);
 
-        stream = AudioSystem.getAudioInputStream(new File("res/audio/sword.wav"));
+        stream = AudioSystem.getAudioInputStream(new File("resources/audio/pistol_shoot.wav"));
         clip = AudioSystem.getClip();
         clip.open(stream);
         clips.put(Sound.SHOOT, clip);
 
-        stream = AudioSystem.getAudioInputStream(new File("res/audio/steps.wav"));
+        stream = AudioSystem.getAudioInputStream(new File("resources/audio/steps.wav"));
         clip = AudioSystem.getClip();
         clip.open(stream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.stop();
         clips.put(Sound.STEPS, clip);
 
-        clips.put(Sound.FAST_STEPS, changeSpeed(true, 2, AudioSystem.getAudioInputStream(new File("res/audio/steps.wav"))));
+        clips.put(Sound.FAST_STEPS, changeSpeed(true, 2, AudioSystem.getAudioInputStream(new File("resources/audio/steps.wav"))));
 
-        stream = AudioSystem.getAudioInputStream(new File("res/audio/breathing.wav"));
+        stream = AudioSystem.getAudioInputStream(new File("resources/audio/breathing.wav"));
         clip = AudioSystem.getClip();
         clip.open(stream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.stop();
         clips.put(Sound.BREATHE, clip);
 
-        stream = AudioSystem.getAudioInputStream(new File("res/audio/bg.wav"));
+        stream = AudioSystem.getAudioInputStream(new File("resources/audio/bg.wav"));
         clip = AudioSystem.getClip();
         clip.open(stream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);

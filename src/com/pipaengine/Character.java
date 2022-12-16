@@ -143,7 +143,8 @@ public class Character {
         dir = new Mtx2x2(cos, -sin, sin, cos).apply(dir);
     }
 
-    void attack() {
+    void attack()
+    {
         if (deltaWeaponAngle != -.2) {
             deltaWeaponAngle = -.2;
             Audio.resetAndStart(Audio.Sound.SHOOT);

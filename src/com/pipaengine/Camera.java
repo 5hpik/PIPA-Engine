@@ -62,7 +62,7 @@ public class Camera extends JPanel {
 
         Graphics2D g2d = (Graphics2D)g;
 
-        g2d.setFont(Font.createFont(Font.TRUETYPE_FONT, new File("res/font.ttf")).deriveFont(Font.PLAIN, 150));
+        g2d.setFont(Font.createFont(Font.TRUETYPE_FONT, new File("resources/font.ttf")).deriveFont(Font.PLAIN, 150));
         FontMetrics fm = g2d.getFontMetrics();
 
         g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
