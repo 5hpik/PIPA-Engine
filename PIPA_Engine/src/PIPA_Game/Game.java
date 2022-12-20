@@ -1,5 +1,8 @@
 package PIPA_Game;
 
+import PIPA_Game.gfx.Screen;
+import PIPA_Game.gfx.SpriteSheet;
+
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
@@ -26,6 +29,7 @@ public class Game extends Canvas implements Runnable {
     private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
     private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
+    private Screen screen;
 
     public Game()
     {
@@ -46,6 +50,11 @@ public class Game extends Canvas implements Runnable {
         frame.setVisible(true);
 
 
+    }
+
+    public void init()
+    {
+        screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
     }
 
     public synchronized void start()
@@ -69,6 +78,9 @@ public class Game extends Canvas implements Runnable {
 
         long lastTimer = System.currentTimeMillis();
         double delta = 0;
+
+        init();
+
         while (running)
         {
             Long now = System.nanoTime();
@@ -108,6 +120,7 @@ public class Game extends Canvas implements Runnable {
         }
     }
 
+
     public void tick()
     {
         tickCount++;
@@ -115,6 +128,11 @@ public class Game extends Canvas implements Runnable {
         for (int i=0;i<pixels.length; i++)
         {
              pixels[i]=i+tickCount;
+        }
+
+        for (int i=0; i<8; i++)
+        {
+            System.out.println(pixels[i]);
         }
     }
 
@@ -126,6 +144,8 @@ public class Game extends Canvas implements Runnable {
             createBufferStrategy(3);
             return;
         }
+
+        screen.render(pixels, 0, WIDTH);
 
         Graphics g = bs.getDrawGraphics();
         g.drawImage(image,0,0,getWidth(),getHeight(), null);
