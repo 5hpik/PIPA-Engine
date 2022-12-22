@@ -47,7 +47,7 @@ public class Screen {
                     for (int x = xMin; x<xMax; x++)
                     {
                         int colour = tileIndex*4 + sheet.pixels[sheetPixel++];
-                        pixels[tilePixel++] = colours[colour];
+                        //pixels[tilePixel++] = colours[colour];
                     }
                 }
             }
@@ -62,8 +62,6 @@ public class Screen {
         int xTile = tile%32;
         int yTile = tile/32;
 
-        
-        int tileOffset = (xTile<<3);
         int tileOffset = (xTile<<3);
     }
 }
