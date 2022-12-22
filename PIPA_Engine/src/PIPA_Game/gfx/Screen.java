@@ -38,14 +38,14 @@ public class Screen {
             if (yMin < 0) yMin = 0;
             if (yMax > height) yMax = height;
 
-            for (int xTile = xOffset >> 3; yTile <= (xOffset + width) >> 3; xTile++)
+            for (int xTile = xOffset >> 3; xTile <= (xOffset + width) >> 3; xTile++)
             {
                 int xMin = xTile * 8 - xOffset;
                 int xMax = xMin + 8;
                 if (xMin < 0) xMin = 0;
                 if (xMax > width) xMax = width;
 
-                int tileIndex = (xTile & (MAP_WIDTH_MASK)) + (yTile &(MAP_WIDTH_MASK))*MAP_WIDTH;
+                int tileIndex = (xTile &(MAP_WIDTH_MASK)) + (yTile &(MAP_WIDTH_MASK))*MAP_WIDTH;
 
                 for (int y = yMin; y<yMax; y++)
                 {

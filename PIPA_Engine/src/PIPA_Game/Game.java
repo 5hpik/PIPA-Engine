@@ -26,10 +26,11 @@ public class Game extends Canvas implements Runnable {
     public boolean running = false;
     public int tickCount = 0;
 
-    private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+    private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
     private Screen screen;
+    public InputHandler input;
 
     public Game()
     {
@@ -55,6 +56,7 @@ public class Game extends Canvas implements Runnable {
     public void init()
     {
         screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
+        input = new InputHandler(this);
     }
 
     public synchronized void start()
@@ -125,15 +127,10 @@ public class Game extends Canvas implements Runnable {
     {
         tickCount++;
 
-        for (int i=0;i<pixels.length; i++)
-        {
-             pixels[i]=i+tickCount;
-        }
-
-        for (int i=0; i<8; i++)
-        {
-            System.out.println(pixels[i]);
-        }
+        if (input.up.isPressed()) screen.yOffset--;
+        if (input.down.isPressed()) screen.yOffset++;
+        if (input.left.isPressed()) screen.xOffset--;
+        if (input.right.isPressed()) screen.xOffset++;
     }
 
     public void render()

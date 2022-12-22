@@ -19,7 +19,7 @@ public class SpriteSheet {
         try {
             image = ImageIO.read(SpriteSheet.class.getResourceAsStream(path));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         if (image == null)
