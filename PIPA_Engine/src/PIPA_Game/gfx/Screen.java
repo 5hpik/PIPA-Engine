@@ -62,6 +62,7 @@ public class Screen {
         int xTile = tile%32;
         int yTile = tile/32;
 
+        
         int tileOffset = (xTile<<3);
         int tileOffset = (xTile<<3);
     }
