@@ -1,6 +1,7 @@
 package PIPA_Game;
 
 import PIPA_Game.gfx.Colours;
+import PIPA_Game.gfx.Font;
 import PIPA_Game.gfx.Screen;
 import PIPA_Game.gfx.SpriteSheet;
 
@@ -164,9 +165,13 @@ public class Game extends Canvas implements Runnable {
         {
             for (int x =0;x<32;x++)
             {
-                screen.render(x<<3, y<<3, 0, Colours.get(555, 505, 050, 005));
+                boolean flipX = x%2==0;
+                boolean flipY = y%2==0;
+                screen.render(x<<3, y<<3, 0, Colours.get(555, 505, 055, 550),flipX,flipY);
             }
         }
+
+        Font.render("Hello World!", screen, 0, 0, Colours.get(000, -1, -1, 555));
 
         for (int y =0;y<screen.height;y++) {
             for (int x = 0; x < screen.width; x++) {
