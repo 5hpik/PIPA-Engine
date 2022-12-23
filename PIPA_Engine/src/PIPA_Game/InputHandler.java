@@ -30,7 +30,7 @@ public class InputHandler implements KeyListener {
 
         public void toggle(boolean isPressed)
         {
-            pressed=isPressed;
+            pressed = isPressed;
             if (isPressed) numTimesPressed++;
         }
     }
@@ -43,19 +43,17 @@ public class InputHandler implements KeyListener {
     public Key right = new Key();
 
     @Override
-    public void keyTyped(KeyEvent e) {
+    public void keyPressed(KeyEvent e) {
         toggleKey(e.getKeyCode(), true);
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyReleased(KeyEvent e) {
         toggleKey(e.getKeyCode(), false);
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
-
-    }
+    public void keyTyped(KeyEvent e) { }
 
     public void toggleKey(int keyCode, boolean isPressed)
     {

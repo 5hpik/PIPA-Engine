@@ -1,6 +1,11 @@
 package PIPA_Game.level;
 
+import PIPA_Game.entities.Entity;
 import PIPA_Game.gfx.Screen;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import PIPA_Game.level.tiles.Tile;
 
 public class Level {
@@ -8,6 +13,7 @@ public class Level {
     private byte[] tiles;
     public int width;
     public int height;
+    public List<Entity> entities = new ArrayList<Entity>();
 
     public Level(int width, int height) {
         tiles = new byte[width * height];
@@ -29,7 +35,9 @@ public class Level {
     }
 
     public void tick() {
-
+        for (Entity e : entities) {
+            e.tick();
+        }
     }
 
     public void renderTiles(Screen screen, int xOffset, int yOffset) {
@@ -51,9 +59,19 @@ public class Level {
         }
     }
 
+    public void renderEntities(Screen screen) {
+        for (Entity e : entities) {
+            e.render(screen);
+        }
+    }
+
     public Tile getTile(int x, int y) {
         if (0 > x || x >= width || 0 > y || y >= height)
             return Tile.VOID;
         return Tile.tiles[tiles[x + y * width]];
+    }
+
+    public void addEntity(Entity entity) {
+        this.entities.add(entity);
     }
 }
