@@ -2,6 +2,7 @@ package PIPA_Game.entities;
 
 import PIPA_Game.InputHandler;
 import PIPA_Game.gfx.Colours;
+import PIPA_Game.gfx.Font;
 import PIPA_Game.gfx.Screen;
 import PIPA_Game.level.Level;
 
@@ -12,10 +13,12 @@ public class Player extends Mob {
     private int scale = 1;
     private boolean isSwimming = false;
     private int tickCount;
+    private String username;
 
-    public Player(Level level, int x, int y, InputHandler input) {
+    public Player(Level level, int x, int y, InputHandler input, String username) {
         super(level, "Player", x, y, 1);
         this.input = input;
+        this.username = username;
     }
 
     public void tick() {
@@ -113,6 +116,11 @@ public class Player extends Mob {
         {
             screen.render(xOffset + (modifier * flipBottom), yOffset + modifier, xTile + (yTile + 1) * 32, colour, flipBottom, scale);
             screen.render(xOffset + modifier - (modifier * flipBottom), yOffset + modifier, (xTile + 1) + (yTile + 1) * 32, colour, flipBottom, scale);
+        }
+
+        if (username != null)
+        {
+            Font.render(username, screen, xOffset - ((username.length() - 1) / 2 * 8), yOffset - 10, Colours.get(-1, -1, -1, 555), 1);
         }
     }
     public boolean hasCollided(int xa, int ya) {

@@ -14,7 +14,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import PIPA_Game.level.Level;
 
@@ -77,7 +77,7 @@ public class Game extends Canvas implements Runnable {
         screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
         input = new InputHandler(this);
         level = new Level(64, 64);
-        player = new Player(level, 0, 0, input);
+        player = new Player(level, 0, 0, input, JOptionPane.showInputDialog(this, "Enter your username"));
         level.addEntity(player);
     }
 
