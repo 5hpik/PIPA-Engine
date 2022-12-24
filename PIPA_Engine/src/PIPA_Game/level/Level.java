@@ -28,7 +28,7 @@ public class Level {
                 if (x * y % 10 < 5) {
                     tiles[x + y * width] = Tile.GRASS.getId();
                 } else {
-                    tiles[x + y * width] = Tile.STONE.getId();
+                    tiles[x + y * width] = Tile.WATER.getId();
                 }
             }
         }
@@ -37,6 +37,14 @@ public class Level {
     public void tick() {
         for (Entity e : entities) {
             e.tick();
+        }
+
+        for (Tile t : Tile.tiles)
+        {
+            if (t == null)
+                break;
+
+            t.tick();
         }
     }
 
