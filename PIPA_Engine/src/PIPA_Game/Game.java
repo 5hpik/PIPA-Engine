@@ -17,6 +17,8 @@ import java.awt.image.DataBufferInt;
 import javax.swing.*;
 
 import PIPA_Game.level.Level;
+import PIPA_Game.net.GameClient;
+import PIPA_Game.net.GameServer;
 
 public class Game extends Canvas implements Runnable {
 
@@ -42,6 +44,9 @@ public class Game extends Canvas implements Runnable {
     public InputHandler input;
     public Level level;
     public Player player;
+
+    private GameClient socketClient;
+    private GameServer socketServer;
 
     public Game() {
         setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
@@ -79,11 +84,22 @@ public class Game extends Canvas implements Runnable {
         level = new Level(64, 64);
         player = new Player(level, 0, 0, input, JOptionPane.showInputDialog(this, "Enter your username"));
         level.addEntity(player);
+        socketClient.sendData("ping".getBytes());
     }
 
     public synchronized void start() {
         running = true;
         new Thread(this).start();
+
+        if (JOptionPane.showConfirmDialog(this, "Do you want to run the server?") == 0)
+        {
+            socketServer = new GameServer(this);
+            socketServer.start();
+        }
+
+        socketClient = new GameClient(this, "localhost");
+        socketClient.start();
+
     }
 
     public synchronized void stop() {
@@ -124,7 +140,7 @@ public class Game extends Canvas implements Runnable {
 
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
-                System.out.println(ticks + " ticks , " + frames
+                frame.setTitle(ticks + " ticks , " + frames
                         + " frames per second");
                 frames = 0;
                 ticks = 0;
