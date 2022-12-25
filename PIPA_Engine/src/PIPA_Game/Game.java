@@ -1,6 +1,7 @@
 package PIPA_Game;
 
 import PIPA_Game.entities.Player;
+import PIPA_Game.entities.PlayerMP;
 import PIPA_Game.gfx.Colours;
 import PIPA_Game.gfx.Font;
 import PIPA_Game.gfx.Screen;
@@ -19,6 +20,7 @@ import javax.swing.*;
 import PIPA_Game.level.Level;
 import PIPA_Game.net.GameClient;
 import PIPA_Game.net.GameServer;
+import PIPA_Game.net.packets.Packet00Login;
 
 public class Game extends Canvas implements Runnable {
 
@@ -28,44 +30,34 @@ public class Game extends Canvas implements Runnable {
     public static final int HEIGHT = WIDTH / 12 * 9;
     public static final int SCALE = 3;
     public static final String NAME = "Game";
+    public static final Dimension DIMENSIONS = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
+    public static Game game;
 
-    private JFrame frame;
+    public JFrame frame;
+
+    private Thread thread;
 
     public boolean running = false;
     public int tickCount = 0;
 
-    private BufferedImage image = new BufferedImage(WIDTH, HEIGHT,
-            BufferedImage.TYPE_INT_RGB);
-    private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer())
-            .getData();
+    private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+    private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
     private int[] colours = new int[6 * 6 * 6];
 
     private Screen screen;
     public InputHandler input;
+    public WindowHandler windowHandler;
     public Level level;
     public Player player;
 
-    private GameClient socketClient;
-    private GameServer socketServer;
+    public GameClient socketClient;
+    public GameServer socketServer;
 
-    public Game() {
-        setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
-        setMaximumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
-        setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
-
-        frame = new JFrame(NAME);
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
-        frame.add(this, BorderLayout.CENTER);
-        frame.pack();
-
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
+    public boolean debug = true;
+    public boolean isApplet = false;
 
     public void init() {
+        game = this;
         int index = 0;
         for (int r = 0; r < 6; r++) {
             for (int g = 0; g < 6; g++) {
@@ -78,41 +70,56 @@ public class Game extends Canvas implements Runnable {
                 }
             }
         }
-
         screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
         input = new InputHandler(this);
-        level = new Level(64, 64);
-        player = new Player(level, 0, 0, input, JOptionPane.showInputDialog(this, "Enter your username"));
+        level = new Level("/levels/water_test_level.png");
+        player = new PlayerMP(level, 100, 100, input, JOptionPane.showInputDialog(this, "Please enter a username"),
+                null, -1);
         level.addEntity(player);
-        socketClient.sendData("ping".getBytes());
+        if (!isApplet) {
+            Packet00Login loginPacket = new Packet00Login(player.getUsername(), player.x, player.y);
+            if (socketServer != null) {
+                socketServer.addConnection((PlayerMP) player, loginPacket);
+            }
+            loginPacket.writeData(socketClient);
+        }
     }
 
     public synchronized void start() {
         running = true;
-        new Thread(this).start();
 
-        if (JOptionPane.showConfirmDialog(this, "Do you want to run the server?") == 0)
-        {
-            socketServer = new GameServer(this);
-            socketServer.start();
+        thread = new Thread(this, NAME + "_main");
+        thread.start();
+        if (!isApplet) {
+            if (JOptionPane.showConfirmDialog(this, "Do you want to run the server") == 0) {
+                socketServer = new GameServer(this);
+                socketServer.start();
+            }
+
+            socketClient = new GameClient(this, "localhost");
+            socketClient.start();
         }
-
-        socketClient = new GameClient(this, "localhost");
-        socketClient.start();
-
     }
 
     public synchronized void stop() {
         running = false;
+
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void run() {
         long lastTime = System.nanoTime();
-        long lastTimer = System.currentTimeMillis();
         double nsPerTick = 1000000000D / 60D;
-        double delta = 0;
+
         int ticks = 0;
         int frames = 0;
+
+        long lastTimer = System.currentTimeMillis();
+        double delta = 0;
 
         init();
 
@@ -128,11 +135,13 @@ public class Game extends Canvas implements Runnable {
                 delta -= 1;
                 shouldRender = true;
             }
+
             try {
                 Thread.sleep(2);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             if (shouldRender) {
                 frames++;
                 render();
@@ -140,8 +149,7 @@ public class Game extends Canvas implements Runnable {
 
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
-                frame.setTitle(ticks + " ticks , " + frames
-                        + " frames per second");
+                debug(DebugLevel.INFO, ticks + " ticks, " + frames + " frames");
                 frames = 0;
                 ticks = 0;
             }
@@ -164,24 +172,13 @@ public class Game extends Canvas implements Runnable {
         int yOffset = player.y - (screen.height / 2);
 
         level.renderTiles(screen, xOffset, yOffset);
-
-        for (int x = 0; x < level.width; x++) {
-            int colour = Colours.get(-1, -1, -1, 000);
-            if (x % 10 == 0 && x != 0) {
-                colour = Colours.get(-1, -1, -1, 500);
-            }
-            Font.render((x % 10) + "", screen, 0 + (x * 8), 0, colour, 1);
-        }
-
         level.renderEntities(screen);
 
         for (int y = 0; y < screen.height; y++) {
             for (int x = 0; x < screen.width; x++) {
-                int ColourCode = screen.pixels[x + y * screen.width];
-                if (ColourCode < 255) {
-                    pixels[x + y * WIDTH] = colours[ColourCode];
-
-                }
+                int colourCode = screen.pixels[x + y * screen.width];
+                if (colourCode < 255)
+                    pixels[x + y * WIDTH] = colours[colourCode];
             }
         }
 
@@ -191,8 +188,33 @@ public class Game extends Canvas implements Runnable {
         bs.show();
     }
 
-    public static void main(String[] args) {
-        new Game().start();
+    public static long fact(int n) {
+        if (n <= 1) {
+            return 1;
+        } else {
+            return n * fact(n - 1);
+        }
     }
 
+    public void debug(DebugLevel level, String msg) {
+        switch (level) {
+            default:
+            case INFO:
+                if (debug) {
+                    System.out.println("[" + NAME + "] " + msg);
+                }
+                break;
+            case WARNING:
+                System.out.println("[" + NAME + "] [WARNING] " + msg);
+                break;
+            case SEVERE:
+                System.out.println("[" + NAME + "] [SEVERE]" + msg);
+                this.stop();
+                break;
+        }
+    }
+
+    public static enum DebugLevel {
+        INFO, WARNING, SEVERE;
+    }
 }

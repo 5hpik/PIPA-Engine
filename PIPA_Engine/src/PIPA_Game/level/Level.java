@@ -1,49 +1,105 @@
 package PIPA_Game.level;
 
 import PIPA_Game.entities.Entity;
+import PIPA_Game.entities.PlayerMP;
 import PIPA_Game.gfx.Screen;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import PIPA_Game.level.tiles.Tile;
+
+import javax.imageio.ImageIO;
 
 public class Level {
 
     private byte[] tiles;
     public int width;
     public int height;
-    public List<Entity> entities = new ArrayList<Entity>();
+    private List<Entity> entities = new ArrayList<Entity>();
+    private String imagePath;
+    private BufferedImage image;
 
-    public Level(int width, int height) {
-        tiles = new byte[width * height];
-        this.width = width;
-        this.height = height;
-        this.generateLevel();
+    public Level(String imagePath) {
+        if (imagePath != null) {
+            this.imagePath = imagePath;
+            this.loadLevelFromFile();
+        } else {
+            this.width = 64;
+            this.height = 64;
+            tiles = new byte[width * height];
+            this.generateLevel();
+        }
     }
 
-    public void generateLevel() {
+    private void loadLevelFromFile() {
+        try {
+            this.image = ImageIO.read(Level.class.getResource(this.imagePath));
+            this.width = this.image.getWidth();
+            this.height = this.image.getHeight();
+            tiles = new byte[width * height];
+            this.loadTiles();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadTiles() {
+        int[] tileColours = this.image.getRGB(0, 0, width, height, null, 0, width);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (x * y % 10 < 5) {
-                    tiles[x + y * width] = Tile.GRASS.getId();
-                } else {
-                    tiles[x + y * width] = Tile.WATER.getId();
+                tileCheck: for (Tile t : Tile.tiles) {
+                    if (t != null && t.getLevelColour() == tileColours[x + y * width]) {
+                        this.tiles[x + y * width] = t.getId();
+                        break tileCheck;
+                    }
                 }
             }
         }
     }
 
+    @SuppressWarnings("unused")
+    private void saveLevelToFile() {
+        try {
+            ImageIO.write(image, "png", new File(Level.class.getResource(this.imagePath).getFile()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void alterTile(int x, int y, Tile newTile) {
+        this.tiles[x + y * width] = newTile.getId();
+        image.setRGB(x, y, newTile.getLevelColour());
+    }
+
+    public void generateLevel() {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (x * y % 10 < 7) {
+                    tiles[x + y * width] = Tile.GRASS.getId();
+                } else {
+                    tiles[x + y * width] = Tile.STONE.getId();
+                }
+            }
+        }
+    }
+
+    public synchronized List<Entity> getEntities() {
+        return this.entities;
+    }
+
     public void tick() {
-        for (Entity e : entities) {
+        for (Entity e : getEntities()) {
             e.tick();
         }
 
-        for (Tile t : Tile.tiles)
-        {
-            if (t == null)
+        for (Tile t : Tile.tiles) {
+            if (t == null) {
                 break;
-
+            }
             t.tick();
         }
     }
@@ -68,7 +124,7 @@ public class Level {
     }
 
     public void renderEntities(Screen screen) {
-        for (Entity e : entities) {
+        for (Entity e : getEntities()) {
             e.render(screen);
         }
     }
@@ -79,7 +135,39 @@ public class Level {
         return Tile.tiles[tiles[x + y * width]];
     }
 
-    public void addEntity(Entity entity) {
-        this.entities.add(entity);
+    public synchronized void addEntity(Entity entity) {
+        this.getEntities().add(entity);
+    }
+
+    public synchronized void removePlayerMP(String username) {
+        int index = 0;
+        for (Entity e : getEntities()) {
+            if (e instanceof PlayerMP && ((PlayerMP) e).getUsername().equals(username)) {
+                break;
+            }
+            index++;
+        }
+        this.getEntities().remove(index);
+    }
+
+    private int getPlayerMPIndex(String username) {
+        int index = 0;
+        for (Entity e : getEntities()) {
+            if (e instanceof PlayerMP && ((PlayerMP) e).getUsername().equals(username)) {
+                break;
+            }
+            index++;
+        }
+        return index;
+    }
+
+    public synchronized void movePlayer(String username, int x, int y, int numSteps, boolean isMoving, int movingDir) {
+        int index = getPlayerMPIndex(username);
+        PlayerMP player = (PlayerMP) this.getEntities().get(index);
+        player.x = x;
+        player.y = y;
+        player.setMoving(isMoving);
+        player.setNumSteps(numSteps);
+        player.setMovingDir(movingDir);
     }
 }

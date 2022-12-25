@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="PIPA_Engine:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PIPA_Engine_jar</output-path>
+    <root id="archive" name="PIPA_Engine.jar">
+      <element id="module-output" name="PIPA_Engine" />
+      <element id="library" level="project" name="res" />
+    </root>
+  </artifact>
+</component>

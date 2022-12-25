@@ -24,23 +24,19 @@ public abstract class Mob extends Entity {
         if (xa != 0 && ya != 0) {
             move(xa, 0);
             move(0, ya);
-            numSteps -= 1;
+            numSteps--;
             return;
         }
-        numSteps += 1;
+        numSteps++;
         if (!hasCollided(xa, ya)) {
-            if (ya < 0) {
+            if (ya < 0)
                 movingDir = 0;
-            }
-            if (ya > 0) {
+            if (ya > 0)
                 movingDir = 1;
-            }
-            if (xa < 0) {
+            if (xa < 0)
                 movingDir = 2;
-            }
-            if (xa > 0) {
+            if (xa > 0)
                 movingDir = 3;
-            }
             x += xa * speed;
             y += ya * speed;
         }
@@ -48,18 +44,44 @@ public abstract class Mob extends Entity {
 
     public abstract boolean hasCollided(int xa, int ya);
 
-    protected boolean isSolidTile(int xa, int ya, int x, int y)
-    {
-        if (level == null) return false;
-        Tile lastTile = level.getTile((this.x + x)>>3, (this.y + y)>>3);
-        Tile newTile = level.getTile((this.x + x + xa)>>3, (this.y + y + ya)>>3);
-        if (!lastTile.equals(newTile)&& newTile.isSolid()) return true;
-
+    protected boolean isSolidTile(int xa, int ya, int x, int y) {
+        if (level == null) {
+            return false;
+        }
+        Tile lastTile = level.getTile((this.x + x) >> 3, (this.y + y) >> 3);
+        Tile newTile = level.getTile((this.x + x + xa) >> 3, (this.y + y + ya) >> 3);
+        if (!lastTile.equals(newTile) && newTile.isSolid()) {
+            return true;
+        }
         return false;
     }
-
 
     public String getName() {
         return name;
     }
+
+    public int getNumSteps() {
+        return numSteps;
+    }
+
+    public boolean isMoving() {
+        return isMoving;
+    }
+
+    public int getMovingDir() {
+        return movingDir;
+    }
+
+    public void setNumSteps(int numSteps) {
+        this.numSteps = numSteps;
+    }
+
+    public void setMoving(boolean isMoving) {
+        this.isMoving = isMoving;
+    }
+
+    public void setMovingDir(int movingDir) {
+        this.movingDir = movingDir;
+    }
+
 }
